@@ -108,7 +108,7 @@ Expected response:
 
 Get the pod IP (if needed for debugging purposes):
 ```bash
-kubectl get endpoints ai-inference-server
+kubectl get endpoints region-filtering-server
 # alternative
 kubectl get pods -o wide
 ```
