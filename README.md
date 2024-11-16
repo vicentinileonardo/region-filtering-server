@@ -60,7 +60,7 @@ kubectl apply -f server-deployment.yaml
 kubectl apply -f server-service.yaml
 ```
 
-Check the deployment, pods, and services
+Check the deployment, pods, and services:
 ```bash
 kubectl get deployments
 kubectl get pods
