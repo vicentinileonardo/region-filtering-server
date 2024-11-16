@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: region-filtering-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: region-filtering-server
+  template:
+    metadata:
+      labels:
+        app: region-filtering-server
+    spec:
+      containers:
+      - name: region-filtering-server
+        image: region-filtering-server:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
