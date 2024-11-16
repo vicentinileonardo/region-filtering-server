@@ -8,6 +8,13 @@ This is a simple server that filters cloud regions based on a **region of origin
 
 Only Azure regions are supported at the moment.
 
+## Data
+
+Data is obtained from the Azure Docs. In particular, the data is extracted from the following page: [Azure Network Latency](https://raw.githubusercontent.com/MicrosoftDocs/azure-docs/refs/heads/main/articles/networking/azure-network-latency.md).
+
+Inside the `scripts` folder, there is a simple utility script that can be used to merge csv files into a single csv file representing the latency between all regions.
+This can be useful to generate a new latency matrix if the original data changes in the documentation.
+
 ## How to run
 
 ### Local deployment
