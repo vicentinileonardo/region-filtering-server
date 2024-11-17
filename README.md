@@ -6,7 +6,7 @@ This repository is part of a project: **Carbon-aware workload scheduling in a mu
 
 This is a simple server that filters cloud regions based on a **region of origin** and a **latency threshold**. 
 
-Only Azure regions are supported at the moment.
+Only **Azure regions** are supported at the moment.
 
 ## Data
 
@@ -30,7 +30,37 @@ Test the server by sending a request like the following:
 ```bash
 curl -X POST http://localhost:8080/regions/eligible \
   -H "Content-Type: application/json" \
-  -d '{"origin_region": "West US", "max_latency": 50}'
+  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "Italy North", "max_latency": 15}'
+```
+
+Expected response:
+```json
+{
+  "cloud_provider":"azure",
+  "eligible_regions":
+  [
+    {
+      "name":"Switzerland West",
+      "iso_country_code_a2":"CH",
+      "physical_location":""
+    },
+    {
+      "name":"Switzerland North",
+      "iso_country_code_a2":"CH",
+      "physical_location":"Zurich"
+    },
+    {
+      "name":"France South",
+      "iso_country_code_a2":"FR",
+      "physical_location":""
+    },
+    {
+      "name":"Italy North",
+      "iso_country_code_a2":"IT",
+      "physical_location":"Milan"
+    }
+  ]
+}
 ```
 
 ### Docker deployment
@@ -98,7 +128,7 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 
 curl -X POST http://region-filtering-server:8080/regions/eligible \
   -H "Content-Type: application/json" \
-  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "Italy North", "max_latency": 50}'
+  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "West US", "max_latency": 50}'
 ```
 
 Expected response:
