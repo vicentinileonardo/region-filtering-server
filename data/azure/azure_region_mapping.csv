@@ -1,0 +1,46 @@
+Region,ISO alpha-2,Electricity Maps region,Geography,Physical Location,Availability Zones,Paired Region
+Australia Central,AU,N/A,Asia Pacific,Canberra,Not supported,Australia Central 2
+Australia Central 2,AU,N/A,Asia Pacific,,,
+Australia East,AU,N/A,Asia Pacific,New South Wales,3,Australia Southeast
+Australia Southeast,AU,N/A,Asia Pacific,Victoria,Not supported,Australia East
+Brazil South,BR,N/A,South America,Sao Paulo State,3,South Central US
+Canada Central,CA,N/A,Canada,Toronto,3,Canada East
+Canada East,CA,N/A,Canada,Quebec,Not supported,Canada Central
+Central India,IN,N/A,Asia Pacific,Pune,3,South India
+Central US,US,N/A,US,Iowa,3,East US 2
+East Asia,HK,N/A,Asia Pacific,Hong Kong,3,Southeast Asia
+East US,US,N/A,US,Virginia,3,West US
+East US 2,US,N/A,US,Virginia,3,Central US
+France Central,FR,N/A,Europe,Paris,3,France South
+France South,FR,N/A,Europe,,,
+Germany North,DE,N/A,Europe,,,
+Germany West Central,DE,N/A,Europe,Frankfurt,3,Germany North
+Israel Central,IL,N/A,Middle East,Israel,3,N/A
+Italy North,IT,N/A,Europe,Milan,3,N/A
+Japan East,JP,N/A,Asia Pacific,Tokyo Saitama,3,Japan West
+Japan West,JP,N/A,Asia Pacific,Osaka,Not supported,Japan East
+Korea Central,KR,N/A,Asia Pacific,Seoul,3,Korea South
+Korea South,KR,N/A,Asia Pacific,Busan,Not supported,Korea Central
+North Central US,US,N/A,US,Illinois,Not supported,South Central US
+North Europe,IE,N/A,Europe,Ireland,3,West Europe
+Norway East,NO,N/A,Europe,Norway,3,Norway West
+Norway West,NO,N/A,Europe,,,
+Poland Central,PL,N/A,Europe,Warsaw,3,N/A
+Qatar Central,QA,N/A,Middle East,Doha,3,N/A
+South Africa North,ZA,N/A,Africa,Johannesburg,3,South Africa West
+South Africa West,ZA,N/A,Africa,,,
+South Central US,US,N/A,US,Texas,3,North Central US
+South India,IN,N/A,Asia Pacific,Chennai,Not supported,Central India
+Southeast Asia,SG,N/A,Asia Pacific,Singapore,3,East Asia
+Sweden Central,SE,N/A,Europe,Gävle,3,N/A
+Switzerland North,CH,N/A,Europe,Zurich,3,Switzerland West
+Switzerland West,CH,N/A,Europe,,,
+UAE Central,AE,N/A,Middle East,,,
+UAE North,AE,N/A,Middle East,Dubai,3,UAE Central
+UK South,GB,N/A,Europe,London,3,UK West
+UK West,GB,N/A,Europe,Cardiff,Not supported,UK South
+West Central US,US,N/A,US,Wyoming,Not supported,West US 2
+West Europe,NL,N/A,Europe,Netherlands,3,North Europe
+West US,US,N/A,US,California,Not supported,East US
+West US 2,US,N/A,US,Washington,3,West Central US
+West US 3,US,N/A,US,Phoenix,3,East US

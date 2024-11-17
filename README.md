@@ -42,21 +42,25 @@ Expected response:
     {
       "name":"Switzerland West",
       "iso_country_code_a2":"CH",
+      "electricity_maps_region":"N/A",
       "physical_location":""
     },
     {
       "name":"Switzerland North",
       "iso_country_code_a2":"CH",
+      "electricity_maps_region":"N/A",
       "physical_location":"Zurich"
     },
     {
       "name":"France South",
       "iso_country_code_a2":"FR",
+      "electricity_maps_region":"N/A",
       "physical_location":""
     },
     {
       "name":"Italy North",
       "iso_country_code_a2":"IT",
+      "electricity_maps_region":"N/A",
       "physical_location":"Milan"
     }
   ]
@@ -140,26 +144,31 @@ Expected response:
     {
       "name":"Central US",
       "iso_country_code_a2":"US",
+      "electricity_maps_region":"N/A",
       "physical_location":"Iowa"
     },
     {
       "name":"South Central US",
       "iso_country_code_a2":"US",
+      "electricity_maps_region":"N/A",
       "physical_location":"Texas"
     },
     {
       "name":"West US",
       "iso_country_code_a2":"US",
+      "electricity_maps_region":"N/A",
       "physical_location":"California"
     },
     {
       "name":"North Central US",
       "iso_country_code_a2":"US",
+      "electricity_maps_region":"N/A",
       "physical_location":"Illinois"
     },
     {
       "name":"West Central US",
       "iso_country_code_a2":"US",
+      "electricity_maps_region":"N/A",
       "physical_location":"Wyoming"
     }
   ]
