@@ -98,12 +98,42 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 
 curl -X POST http://region-filtering-server:8080/regions/eligible \
   -H "Content-Type: application/json" \
-  -d '{"origin_region": "Italy North", "max_latency": 50}'
+  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "Italy North", "max_latency": 50}'
 ```
 
 Expected response:
 ```json
-{"eligible_regions":["France South","Germany West Central","Germany North","Poland Central","Switzerland West","Norway East","Switzerland North","UK West","Sweden Central","France Central","North Europe","Norway West","West Europe","Israel Central","UK South","Italy North"]}
+{ 
+  "cloud_provider":"azure",
+  "eligible_regions":
+  [
+    {
+      "name":"Central US",
+      "iso_country_code_a2":"US",
+      "physical_location":"Iowa"
+    },
+    {
+      "name":"South Central US",
+      "iso_country_code_a2":"US",
+      "physical_location":"Texas"
+    },
+    {
+      "name":"West US",
+      "iso_country_code_a2":"US",
+      "physical_location":"California"
+    },
+    {
+      "name":"North Central US",
+      "iso_country_code_a2":"US",
+      "physical_location":"Illinois"
+    },
+    {
+      "name":"West Central US",
+      "iso_country_code_a2":"US",
+      "physical_location":"Wyoming"
+    }
+  ]
+}
 ```
 
 Get the pod IP (if needed for debugging purposes):
@@ -130,6 +160,7 @@ docker rmi region-filtering-server:latest
 - update readme
 - folder structure organization
 - add other cloud providers (PoC, not official data)
+- test that provided origin region is a valid region for the specified cloud provider
 - multi stage build in Dockerfile
 - helm chart
 - probably it would be useful to have a table with the mapping to Electricity Maps regions or a column in an existing table
