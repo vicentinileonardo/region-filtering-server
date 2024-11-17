@@ -18,7 +18,7 @@ This can be useful to generate a new latency matrix if the original data changes
 The file `region_city_mapping.csv` is a manually created file that maps Azure regions to cities. 
 This is temporary, obtained from the following page: [Azure Regions](https://www.azurespeed.com/Information/AzureRegions), and should be replaced with direct data from Azure, if available.
 
-## How to run
+## Setup
 
 ### Local deployment
 
@@ -127,6 +127,9 @@ docker rmi region-filtering-server:latest
 
 ## TODO
 
+- update readme
 - folder structure organization
+- add other cloud providers (PoC, not official data)
 - multi stage build in Dockerfile
 - helm chart
+- probably it would be useful to have a table with the mapping to Electricity Maps regions or a column in an existing table

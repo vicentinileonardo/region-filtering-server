@@ -12,17 +12,31 @@ import (
 )
 
 const (
-	DATAFILE = "data/azure/latency_matrix.csv"
-	PORT     = "8080"
+	AZURE_LATENCY_MATRIX_FILE = "data/azure/azure_regions_latency_matrix.csv"
+	AZURE_REGION_MAP_FILE     = "data/azure/azure_region_city_mapping.csv"
+	PORT                      = "8080"
+	CLOUD_AZURE               = "azure"
 )
 
-type RegionLatency struct {
-	OriginRegion string  `json:"origin_region"`
-	MaxLatency   float64 `json:"max_latency"`
+type RegionRequest struct {
+	OriginRegion  string  `json:"origin_region"`
+	MaxLatency    float64 `json:"max_latency"`
+	CloudProvider string  `json:"cloud_provider"`
+}
+
+type RegionInfo struct {
+	Name             string `json:"name"`
+	ISOCountryCodeA2 string `json:"iso_country_code_a2"`
+	PhysicalLocation string `json:"physical_location"`
+}
+
+type RegionMapping struct {
+	isoCode  string
+	location string
 }
 
 type RegionResponse struct {
-	EligibleRegions []string `json:"eligible_regions"`
+	EligibleRegions []RegionInfo `json:"eligible_regions"`
 }
 
 type ErrorResponse struct {
@@ -30,18 +44,63 @@ type ErrorResponse struct {
 }
 
 type LatencyService struct {
-	latencyMatrix map[string]map[string]float64
-	regions       []string
+	latencyMatrix  map[string]map[string]float64
+	regions        []string
+	regionMappings map[string]RegionMapping
 }
 
 type Server struct {
 	service *LatencyService
 }
 
-func NewLatencyService(filename string) (*LatencyService, error) {
+func loadRegionMappings(filename string) (map[string]RegionMapping, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("error opening file: %v", err)
+		return nil, fmt.Errorf("error opening region mapping file: %v", err)
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+
+	// Skip header
+	_, err = reader.Read()
+	if err != nil {
+		return nil, fmt.Errorf("error reading header: %v", err)
+	}
+
+	mappings := make(map[string]RegionMapping)
+
+	for {
+		row, err := reader.Read()
+		if err != nil {
+			break // End of file
+		}
+
+		region := row[0]   // Region
+		isoCode := row[1]  // ISO alpha-2
+		location := row[3] // Physical Location
+
+		// Some locations might be empty in the CSV, store what we have
+		mappings[region] = RegionMapping{
+			isoCode:  isoCode,
+			location: location,
+		}
+	}
+
+	return mappings, nil
+}
+
+func NewLatencyService(latencyFile string, mappingFile string) (*LatencyService, error) {
+	// Load region mappings first
+	regionMappings, err := loadRegionMappings(mappingFile)
+	if err != nil {
+		return nil, fmt.Errorf("error loading region mappings: %v", err)
+	}
+
+	// Load latency matrix
+	file, err := os.Open(latencyFile)
+	if err != nil {
+		return nil, fmt.Errorf("error opening latency file: %v", err)
 	}
 	defer file.Close()
 
@@ -55,8 +114,9 @@ func NewLatencyService(filename string) (*LatencyService, error) {
 
 	// Initialize service
 	service := &LatencyService{
-		latencyMatrix: make(map[string]map[string]float64),
-		regions:       headers[1:], // Skip the "Source" column
+		latencyMatrix:  make(map[string]map[string]float64),
+		regions:        headers[1:], // Skip the "Source" column
+		regionMappings: regionMappings,
 	}
 
 	// Read data rows
@@ -88,16 +148,30 @@ func NewLatencyService(filename string) (*LatencyService, error) {
 	return service, nil
 }
 
-func (s *LatencyService) FindEligibleRegions(originRegion string, maxLatency float64) ([]string, error) {
+func (s *LatencyService) FindEligibleRegions(originRegion string, maxLatency float64) ([]RegionInfo, error) {
 	latencies, exists := s.latencyMatrix[originRegion]
 	if !exists {
 		return nil, fmt.Errorf("origin region %s not found", originRegion)
 	}
 
-	var eligibleRegions []string
+	var eligibleRegions []RegionInfo
 	for region, latency := range latencies {
 		if latency <= maxLatency {
-			eligibleRegions = append(eligibleRegions, region)
+			mapping, exists := s.regionMappings[region]
+			if exists {
+				eligibleRegions = append(eligibleRegions, RegionInfo{
+					Name:             region,
+					ISOCountryCodeA2: mapping.isoCode,
+					PhysicalLocation: mapping.location,
+				})
+			} else {
+				// If mapping doesn't exist, include the region with empty location info
+				eligibleRegions = append(eligibleRegions, RegionInfo{
+					Name:             region,
+					ISOCountryCodeA2: "",
+					PhysicalLocation: "",
+				})
+			}
 		}
 	}
 
@@ -105,7 +179,20 @@ func (s *LatencyService) FindEligibleRegions(originRegion string, maxLatency flo
 	// this is to ensure that the origin region is always included in the response
 	// as it could happen that in the latency matrix it has a latency of N/A
 	if _, exists := latencies[originRegion]; !exists {
-		eligibleRegions = append(eligibleRegions, originRegion)
+		mapping, exists := s.regionMappings[originRegion]
+		if exists {
+			eligibleRegions = append(eligibleRegions, RegionInfo{
+				Name:             originRegion,
+				ISOCountryCodeA2: mapping.isoCode,
+				PhysicalLocation: mapping.location,
+			})
+		} else {
+			eligibleRegions = append(eligibleRegions, RegionInfo{
+				Name:             originRegion,
+				ISOCountryCodeA2: "",
+				PhysicalLocation: "",
+			})
+		}
 	}
 
 	return eligibleRegions, nil
@@ -129,7 +216,7 @@ func (s *Server) handleEligibleRegions(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	var request RegionLatency
+	var request RegionRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		writeJSONError(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -142,6 +229,14 @@ func (s *Server) handleEligibleRegions(w http.ResponseWriter, r *http.Request) {
 	}
 	if request.MaxLatency <= 0 {
 		writeJSONError(w, "max_latency must be greater than 0", http.StatusBadRequest)
+		return
+	}
+	if request.CloudProvider == "" {
+		writeJSONError(w, "cloud_provider is required", http.StatusBadRequest)
+		return
+	}
+	if request.CloudProvider != CLOUD_AZURE {
+		writeJSONError(w, "unsupported cloud provider", http.StatusBadRequest)
 		return
 	}
 
@@ -170,7 +265,7 @@ func loggingMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	service, err := NewLatencyService(DATAFILE)
+	service, err := NewLatencyService(AZURE_LATENCY_MATRIX_FILE, AZURE_REGION_MAP_FILE)
 	if err != nil {
 		log.Fatalf("Failed to initialize latency service: %v", err)
 	}

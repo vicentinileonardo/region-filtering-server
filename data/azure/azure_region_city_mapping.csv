@@ -1,0 +1,46 @@
+Region,ISO alpha-2,Geography,Physical Location,Availability Zones,Paired Region
+Australia Central,AU,Asia Pacific,Canberra,Not supported,Australia Central 2
+Australia Central 2,AU,Asia Pacific,,,
+Australia East,AU,Asia Pacific,New South Wales,3,Australia Southeast
+Australia Southeast,AU,Asia Pacific,Victoria,Not supported,Australia East
+Brazil South,BR,South America,Sao Paulo State,3,South Central US
+Canada Central,CA,Canada,Toronto,3,Canada East
+Canada East,CA,Canada,Quebec,Not supported,Canada Central
+Central India,IN,Asia Pacific,Pune,3,South India
+Central US,US,US,Iowa,3,East US 2
+East Asia,HK,Asia Pacific,Hong Kong,3,Southeast Asia
+East US,US,US,Virginia,3,West US
+East US 2,US,US,Virginia,3,Central US
+France Central,FR,Europe,Paris,3,France South
+France South,FR,Europe,,,
+Germany North,DE,Europe,,,
+Germany West Central,DE,Europe,Frankfurt,3,Germany North
+Israel Central,IL,Middle East,Israel,3,N/A
+Italy North,IT,Europe,Milan,3,N/A
+Japan East,JP,Asia Pacific,Tokyo Saitama,3,Japan West
+Japan West,JP,Asia Pacific,Osaka,Not supported,Japan East
+Korea Central,KR,Asia Pacific,Seoul,3,Korea South
+Korea South,KR,Asia Pacific,Busan,Not supported,Korea Central
+North Central US,US,US,Illinois,Not supported,South Central US
+North Europe,IE,Europe,Ireland,3,West Europe
+Norway East,NO,Europe,Norway,3,Norway West
+Norway West,NO,Europe,,,
+Poland Central,PL,Europe,Warsaw,3,N/A
+Qatar Central,QA,Middle East,Doha,3,N/A
+South Africa North,ZA,Africa,Johannesburg,3,South Africa West
+South Africa West,ZA,Africa,,,
+South Central US,US,US,Texas,3,North Central US
+South India,IN,Asia Pacific,Chennai,Not supported,Central India
+Southeast Asia,SG,Asia Pacific,Singapore,3,East Asia
+Sweden Central,SE,Europe,Gävle,3,N/A
+Switzerland North,CH,Europe,Zurich,3,Switzerland West
+Switzerland West,CH,Europe,,,
+UAE Central,AE,Middle East,,,
+UAE North,AE,Middle East,Dubai,3,UAE Central
+UK South,GB,Europe,London,3,UK West
+UK West,GB,Europe,Cardiff,Not supported,UK South
+West Central US,US,US,Wyoming,Not supported,West US 2
+West Europe,NL,Europe,Netherlands,3,North Europe
+West US,US,US,California,Not supported,East US
+West US 2,US,US,Washington,3,West Central US
+West US 3,US,US,Phoenix,3,East US
