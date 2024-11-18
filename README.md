@@ -30,38 +30,38 @@ Test the server by sending a request like the following:
 ```bash
 curl -X POST http://localhost:8080/regions/eligible \
   -H "Content-Type: application/json" \
-  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "Italy North", "max_latency": 15}'
+  -d '{"cloudProvider": "azure", "cloudProviderOriginRegion": "Italy North", "maxLatency": 15}'
 ```
 
 Expected response:
 ```json
 {
-  "cloud_provider":"azure",
-  "eligible_regions":
+  "cloudProvider":"azure",
+  "eligibleRegions":
   [
     {
-      "name":"Switzerland West",
-      "iso_country_code_a2":"CH",
-      "electricity_maps_region":"N/A",
-      "physical_location":""
+      "cloudProviderRegion":"France South",
+      "isoCountryCodeA2":"FR",
+      "physicalLocation":"",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"Switzerland North",
-      "iso_country_code_a2":"CH",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Zurich"
+      "cloudProviderRegion":"Switzerland North",
+      "isoCountryCodeA2":"CH",
+      "physicalLocation":"Zurich",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"France South",
-      "iso_country_code_a2":"FR",
-      "electricity_maps_region":"N/A",
-      "physical_location":""
+      "cloudProviderRegion":"Switzerland West",
+      "isoCountryCodeA2":"CH",
+      "physicalLocation":"",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"Italy North",
-      "iso_country_code_a2":"IT",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Milan"
+      "cloudProviderRegion":"Italy North",
+      "isoCountryCodeA2":"IT",
+      "physicalLocation":"Milan",
+      "electricityMapsRegion":"N/A"
     }
   ]
 }
@@ -132,44 +132,49 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 
 curl -X POST http://region-filtering-server:8080/regions/eligible \
   -H "Content-Type: application/json" \
-  -d '{"cloud_provider": "azure", "cloud_provider_origin_region": "West US", "max_latency": 50}'
+  -d '{"cloudProvider": "azure", "cloudProviderOrigin_region": "West US", "maxLatency": 50}'
+
+# alternative
+curl -X POST http://region-filtering-server.default.svc.cluster.local:8080/regions/eligible \
+  -H "Content-Type: application/json" \
+  -d '{"cloudProvider": "azure", "cloudProviderOriginRegion": "West US", "maxLatency": 50}'
 ```
 
 Expected response:
 ```json
-{ 
-  "cloud_provider":"azure",
-  "eligible_regions":
+{
+  "cloudProvider":"azure",
+  "eligibleRegions":
   [
     {
-      "name":"Central US",
-      "iso_country_code_a2":"US",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Iowa"
+      "cloudProviderRegion":"West Central US",
+      "isoCountryCodeA2":"US",
+      "physicalLocation":"Wyoming",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"South Central US",
-      "iso_country_code_a2":"US",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Texas"
+      "cloudProviderRegion":"South Central US",
+      "isoCountryCodeA2":"US",
+      "physicalLocation":"Texas",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"West US",
-      "iso_country_code_a2":"US",
-      "electricity_maps_region":"N/A",
-      "physical_location":"California"
+      "cloudProviderRegion":"North Central US",
+      "isoCountryCodeA2":"US",
+      "physicalLocation":"Illinois",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"North Central US",
-      "iso_country_code_a2":"US",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Illinois"
+      "cloudProviderRegion":"West US",
+      "isoCountryCodeA2":"US",
+      "physicalLocation":"California",
+      "electricityMapsRegion":"N/A"
     },
     {
-      "name":"West Central US",
-      "iso_country_code_a2":"US",
-      "electricity_maps_region":"N/A",
-      "physical_location":"Wyoming"
+      "cloudProviderRegion":"Central US",
+      "isoCountryCodeA2":"US",
+      "physicalLocation":"Iowa",
+      "electricityMapsRegion":"N/A"
     }
   ]
 }
@@ -195,6 +200,8 @@ docker rmi region-filtering-server:latest
 ```
 
 ## TODO
+
+- add differentiation if i send a Electricity Maps region instead of a cloud region
 
 - update readme
 - folder structure organization

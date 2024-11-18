@@ -19,27 +19,27 @@ const (
 )
 
 type RegionRequest struct {
-	CloudProvider             string  `json:"cloud_provider"`
-	CloudProviderOriginRegion string  `json:"cloud_provider_origin_region"`
-	MaxLatency                float64 `json:"max_latency"`
+	CloudProvider             string  `json:"cloudProvider"`
+	CloudProviderOriginRegion string  `json:"cloudProviderOriginRegion"`
+	MaxLatency                float64 `json:"maxLatency"`
 }
 
-type RegionInfo struct {
-	Name                  string `json:"name"`
-	ISOCountryCodeA2      string `json:"iso_country_code_a2"`
-	ElectricityMapsRegion string `json:"electricity_maps_region"`
-	PhysicalLocation      string `json:"physical_location"`
+type Region struct {
+	CloudProviderRegion   string `json:"cloudProviderRegion"`
+	ISOCountryCodeA2      string `json:"isoCountryCodeA2"`
+	PhysicalLocation      string `json:"physicalLocation"`
+	ElectricityMapsRegion string `json:"electricityMapsRegion"`
 }
 
 type RegionMapping struct {
 	isoCode               string
+	physicalLocation      string
 	electricityMapsRegion string
-	location              string
 }
 
 type RegionResponse struct {
-	CloudProvider   string       `json:"cloud_provider"`
-	EligibleRegions []RegionInfo `json:"eligible_regions"`
+	CloudProvider   string   `json:"cloudProvider"`
+	EligibleRegions []Region `json:"eligibleRegions"`
 }
 
 type ErrorResponse struct {
@@ -82,13 +82,13 @@ func loadRegionMappings(filename string) (map[string]RegionMapping, error) {
 		region := row[0]                // Region
 		isoCode := row[1]               // ISO alpha-2
 		electricityMapsRegion := row[2] // Electricity Maps Region
-		location := row[4]              // Physical Location
+		physicalLocation := row[4]      // Physical Location
 
 		// Some locations might be empty in the CSV, store what we have
 		mappings[region] = RegionMapping{
 			isoCode:               isoCode,
 			electricityMapsRegion: electricityMapsRegion,
-			location:              location,
+			physicalLocation:      physicalLocation,
 		}
 	}
 
@@ -153,27 +153,27 @@ func NewLatencyService(latencyFile string, mappingFile string) (*LatencyService,
 	return service, nil
 }
 
-func (s *LatencyService) FindEligibleRegions(cloudProviderOriginRegion string, maxLatency float64) ([]RegionInfo, error) {
+func (s *LatencyService) FindEligibleRegions(cloudProviderOriginRegion string, maxLatency float64) ([]Region, error) {
 	latencies, exists := s.latencyMatrix[cloudProviderOriginRegion]
 	if !exists {
 		return nil, fmt.Errorf("cloudProviderOriginRegion %s not found", cloudProviderOriginRegion)
 	}
 
-	var eligibleRegions []RegionInfo
+	var eligibleRegions []Region
 	for region, latency := range latencies {
 		if latency <= maxLatency {
 			mapping, exists := s.regionMappings[region]
 			if exists {
-				eligibleRegions = append(eligibleRegions, RegionInfo{
-					Name:                  region,
+				eligibleRegions = append(eligibleRegions, Region{
+					CloudProviderRegion:   region,
 					ISOCountryCodeA2:      mapping.isoCode,
 					ElectricityMapsRegion: mapping.electricityMapsRegion,
-					PhysicalLocation:      mapping.location,
+					PhysicalLocation:      mapping.physicalLocation,
 				})
 			} else {
 				// If mapping doesn't exist, include the region with empty location info
-				eligibleRegions = append(eligibleRegions, RegionInfo{
-					Name:                  region,
+				eligibleRegions = append(eligibleRegions, Region{
+					CloudProviderRegion:   region,
 					ISOCountryCodeA2:      "",
 					ElectricityMapsRegion: "",
 					PhysicalLocation:      "",
@@ -188,15 +188,15 @@ func (s *LatencyService) FindEligibleRegions(cloudProviderOriginRegion string, m
 	if _, exists := latencies[cloudProviderOriginRegion]; !exists {
 		mapping, exists := s.regionMappings[cloudProviderOriginRegion]
 		if exists {
-			eligibleRegions = append(eligibleRegions, RegionInfo{
-				Name:                  cloudProviderOriginRegion,
+			eligibleRegions = append(eligibleRegions, Region{
+				CloudProviderRegion:   cloudProviderOriginRegion,
 				ISOCountryCodeA2:      mapping.isoCode,
 				ElectricityMapsRegion: mapping.electricityMapsRegion,
-				PhysicalLocation:      mapping.location,
+				PhysicalLocation:      mapping.physicalLocation,
 			})
 		} else {
-			eligibleRegions = append(eligibleRegions, RegionInfo{
-				Name:                  cloudProviderOriginRegion,
+			eligibleRegions = append(eligibleRegions, Region{
+				CloudProviderRegion:   cloudProviderOriginRegion,
 				ISOCountryCodeA2:      "",
 				ElectricityMapsRegion: "",
 				PhysicalLocation:      "",
@@ -255,6 +255,9 @@ func (s *Server) handleEligibleRegions(w http.ResponseWriter, r *http.Request) {
 		writeJSONError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// log eligible regions
+	log.Printf("Eligible regions for %s with max latency %f: %v", request.CloudProviderOriginRegion, request.MaxLatency, eligibleRegions)
 
 	json.NewEncoder(w).Encode(RegionResponse{CloudProvider: request.CloudProvider, EligibleRegions: eligibleRegions})
 }
